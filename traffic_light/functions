@@ -1,0 +1,6 @@
+
+long area_square(long fixed_distance, long one_distance, long another_distance){
+    long p = (fixed_distance + one_distance + another_distance)/2;
+    return (p * (p - one_distance) * (p - another_distance) * (p - fixed_distance));
+}
+
