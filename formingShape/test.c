@@ -71,7 +71,7 @@ void calculate_coordinates(){
 				int y = coordinates[i].y + (int)(((double)coordinates[0].distance) * sin(j*per_size));
 
 				if(x==coordsx_option[j] && y==coordsy_option[j]){
-					coords_count[j] += 1
+					coords_count[j] += 1;
 				}
 
 			}
