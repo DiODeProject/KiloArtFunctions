@@ -1,7 +1,7 @@
 
-.PHONY: docs escape_light
+.PHONY: docs test
 KILOLIB = build/kilolib.a
-escape_light: build/escape_light.elf build/escape_light.hex build/escape_light.lss
+test: build/test.elf build/test.hex build/test.lss
 
 CC = avr-gcc
 AVRAR = avr-ar
@@ -39,7 +39,7 @@ $(KILOLIB): kilolib.o message_crc.o message_send.o | build
 	$(AVRAR) rcs $@ kilolib.o message_crc.o message_send.o 
 	rm -f *.o
 
-build/escape_light.elf: escape_light.c $(KILOLIB) | build
+build/test.elf: test.c $(KILOLIB) | build
 	$(CC) $(CFLAGS) -o $@ $< $(KILOLIB) 
 
 docs:

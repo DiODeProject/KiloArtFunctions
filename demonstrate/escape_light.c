@@ -70,6 +70,8 @@ void sample_light()
 
     // Compute the average.
     current_light = sum / number_of_samples;
+
+    printf("light sampled: %d\n",current_light);
 }
 
 void setup()
@@ -82,7 +84,6 @@ void setup()
 void loop()
 {
     printf("light intensity: %d\n", get_ambientlight());
-    sample_light();
     if (kilo_ticks > (last_update + 32))
     {
         last_update = kilo_ticks;
