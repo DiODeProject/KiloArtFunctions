@@ -6,8 +6,11 @@
 // This is an arbitrary number, but it's important that exactly one robot in the
 // group is calibrated to have this ID.
 #define SEED_ID 42
+#define PERIOD 50
+#define PHASE 10
 
 int own_gradient = GRADIENT_MAX;
+int last_fire = 0;
 int received_gradient = 0;
 int received_distance = 0;
 int new_message = 0;
@@ -21,18 +24,29 @@ void setup()
     if (kilo_uid == SEED_ID)
     {
         own_gradient = 0;
+		last_fire = kilo_ticks;
     }
     
     // Set the transmission message.
-    message.type = NORMAL;
-    message.data[0] = own_gradient;
-    message.data[1] = 0;
-    message.crc = message_crc(&message);
 }
 
 void loop() {
     // Only pay attention to messages if this robot is not the seed.
-    if (kilo_uid != SEED_ID)
+
+	if (kilo_uid == SEED_ID) {
+		if (kilo_ticks > last_fire + PERIOD) {
+			set_color(RGB(1, 1, 1));
+			message.type = NORMAL;
+			message.data[0] = own_gradient;
+			message.data[1] = 0;
+			message.crc = message_crc(&message);
+			last_fire = kilo_ticks;
+		} else
+			if (kilo_ticks > last_fire + PHASE) {
+				set_color(RGB(0, 0, 0));
+			}
+	}
+	else
     {
         if (new_message == 1)
         {
@@ -57,6 +71,9 @@ void loop() {
                 message.data[1] = received_distance;
                 message.crc = message_crc(&message);
             }
+			else if (own_gradient = received_gradient + 1) {
+
+			}
             
             new_message = 0;
         }
