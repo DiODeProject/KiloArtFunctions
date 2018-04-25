@@ -9,29 +9,22 @@
 #define SEED_ID 42
 #define PERIOD 50
 #define PHASE 10
+#define CONNECT_DISTANCE 40
 
 int own_gradient = GRADIENT_MAX;
 int last_fire = 0;
+int last_message_received = 0;
 int received_gradient = 0;
-int received_distance = 0;
+int received_distance;
 int upper_last_fire;
 int new_message = 0;
 int fire_next = 0;
 uint32_t last_gradient_anchored;
-
-int send_message = 0;
 message_t message;
 
 message_t *message_tx()
 {
-	if(send_message == 1){
-		return &message;
-	}
-	return 0;
-}
-
-void message_tx_success(){
-	send_message = 0;
+	return &message;
 }
 
 void message_rx(message_t *m, distance_measurement_t *d)
@@ -55,11 +48,6 @@ void setup()
     {
         own_gradient = 0;
 		last_fire = kilo_ticks;
-		message.type = NORMAL;
-		message.data[0] = own_gradient;
-		message.data[1] = 0;
-		message.data[2] = last_fire;
-		message.crc = message_crc(&message);
     }
     
     // Set the transmission message.
@@ -75,12 +63,13 @@ void loop() {
 			last_fire = kilo_ticks;
 		} 
 		else
-			if (kilo_ticks > last_fire + PHASE && kilo_ticks <= last_fire + PHASE + 1) {
+			if (kilo_ticks > last_fire + PHASE) {
 			set_color(RGB(0, 0, 0));
-			send_message = 1;
-			//kilo_message_tx = message_tx;
-			//delay(100);
-			//kilo_message_tx = NULL;
+			message.type = NORMAL;
+			message.data[0] = own_gradient;
+			message.data[1] = 0;
+			message.data[2] = last_fire;
+			message.crc = message_crc(&message);
 		}
 		/*else
 			if (kilo_ticks > last_fire + PHASE + 2 && kilo_ticks < last_fire + PHASE + 4) {
@@ -95,18 +84,20 @@ void loop() {
             new_message = 0;
             if (own_gradient >= received_gradient + 1)
             {
+            	last_message_received = kilo_ticks;
             	//last_fire = kilo_ticks;
 				last_gradient_anchored = kilo_ticks;
 				set_color(RGB(1, 1, 1));
-				delay(400);
+				delay(300);
 				set_color(RGB(0, 0, 0));
             	kilo_message_tx = message_tx;
 				message.type = NORMAL;
 				message.data[0] = own_gradient;
 				message.data[1] = received_distance;
 				message.crc = message_crc(&message);
-				send_message = 1;
-				//delay(100);
+				kilo_message_tx = message_tx;
+				delay(100);
+				kilo_message_tx = NULL;
             }           
 			if (own_gradient > received_gradient + 1)
 			{
@@ -130,7 +121,6 @@ int main()
     kilo_init();
     kilo_message_rx = message_rx;
     kilo_message_tx = message_tx;
-    kilo_message_tx_success = message_tx_success;
     kilo_start(setup, loop);
     
     return 0;
