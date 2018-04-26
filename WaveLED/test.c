@@ -97,15 +97,8 @@ void loop() {
             {
             	//last_fire = kilo_ticks;
 				last_gradient_anchored = kilo_ticks;
-				set_color(RGB(1, 1, 1));
-				delay(400);
-				set_color(RGB(0, 0, 0));
-            	kilo_message_tx = message_tx;
-				message.type = NORMAL;
-				message.data[0] = own_gradient;
-				message.data[1] = received_distance;
-				message.crc = message_crc(&message);
-				send_message = 1;
+				fire_next = 1;
+            	//kilo_message_tx = message_tx;
 				//delay(100);
             }           
 			if (own_gradient > received_gradient + 1)
@@ -115,6 +108,23 @@ void loop() {
 			}
         }
         
+		if (fire_next==1) {
+			if (kilo_ticks > last_fire + PERIOD) {
+				set_color(RGB(1, 1, 1));
+				last_fire = kilo_ticks;
+
+			}
+			else if (kilo_ticks > last_fire + PHASE && kilo_ticks <= last_fire + PHASE + 1) {
+				set_color(RGB(0, 0, 0));
+				message.type = NORMAL;
+				message.data[0] = own_gradient;
+				message.data[1] = received_distance;
+				message.crc = message_crc(&message);
+				send_message = 1;
+				fire_next = 0;
+			}
+			
+		}
         // If no neighbor with a gradient of 1 or more less than this robot's
         // gradient is detected within 2 seconds, increment the latter by 1.
         if ((kilo_ticks > (last_gradient_anchored + 64)) && (own_gradient < GRADIENT_MAX))
