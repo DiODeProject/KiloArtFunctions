@@ -8,7 +8,8 @@
 // group is calibrated to have this ID.
 #define SEED_ID 42
 #define PERIOD 50
-#define PHASE 10
+#define PHASE 20
+#define HALF_PHASE 10
 
 #define CONNECT_DISTANCE 50
 #define INITIAL_DISTANCE 255
@@ -78,12 +79,13 @@ void loop() {
 			last_fire = kilo_ticks;
 		}
 		else
+			if (kilo_ticks > last_fire + HALF_PHASE && kilo_ticks <= last_fire + HALF_PHASE + 1) {
+				set_color(RGB(1, 1, 0));
+				send_message = 1;
+			}
+		else
 			if (kilo_ticks > last_fire + PHASE && kilo_ticks <= last_fire + PHASE + 1) {
 				set_color(RGB(0, 0, 0));
-				send_message = 1;
-				//kilo_message_tx = message_tx;
-				//delay(100);
-				//kilo_message_tx = NULL;
 			}
 		/*else
 		if (kilo_ticks > last_fire + PHASE + 2 && kilo_ticks < last_fire + PHASE + 4) {
@@ -117,13 +119,18 @@ void loop() {
 				last_fire = kilo_ticks;
 
 			}
-			else if (kilo_ticks > last_fire + PHASE && kilo_ticks <= last_fire + PHASE + 1) {
-				set_color(RGB(0, 0, 0));
+		else
+			if (kilo_ticks > last_fire + HALF_PHASE && kilo_ticks <= last_fire + HALF_PHASE + 1) {
+				
+				set_color(RGB(1, 1, 0));
 				message.type = NORMAL;
 				message.data[0] = own_gradient;
 				//message.data[1] = received_distance;
 				message.crc = message_crc(&message);
 				send_message = 1;
+			}
+			else if (kilo_ticks > last_fire + PHASE && kilo_ticks <= last_fire + PHASE + 1) {
+				set_color(RGB(0, 0, 0));
 				fire_next = 0;
 			}
 		}
