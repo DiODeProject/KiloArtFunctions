@@ -7,6 +7,8 @@
 // This is an arbitrary number, but it's important that exactly one robot in the
 // group is calibrated to have this ID.
 #define SEED_ID 42
+#define CONNECTOR 62
+
 #define PERIOD 50
 #define PHASE 20
 #define HALF_PHASE 10
@@ -91,6 +93,55 @@ void loop() {
 		if (kilo_ticks > last_fire + PHASE + 2 && kilo_ticks < last_fire + PHASE + 4) {
 		kilo_message_tx = NULL;
 		}*/
+	}
+	else if(kilo_uid == CONNECTOR){
+		//kilo_message_tx = message_tx;
+		if (new_message == 1)
+		{
+			new_message = 0;
+			if (own_gradient >= received_gradient + 1 && received_distance <= CONNECT_DISTANCE)
+			{
+				//last_fire = kilo_ticks;
+				last_gradient_anchored = kilo_ticks;
+				fire_next = 1;
+				//kilo_message_tx = message_tx;
+				//delay(100);
+			}
+			if (own_gradient > received_gradient + 1 && received_distance <= CONNECT_DISTANCE)
+			{
+				own_gradient = received_gradient + 1;
+
+			}
+		}
+
+		if (fire_next==1) {
+			if (kilo_ticks > last_fire + PERIOD) {
+				//set_color(RGB(1, 1, 1));
+				last_fire = kilo_ticks;
+
+			}
+		else
+			if (kilo_ticks > last_fire + HALF_PHASE && kilo_ticks <= last_fire + HALF_PHASE + 1) {
+				
+				//set_color(RGB(1, 1, 0));
+				message.type = NORMAL;
+				message.data[0] = own_gradient;
+				//message.data[1] = received_distance;
+				message.crc = message_crc(&message);
+				send_message = 1;
+			}
+			else if (kilo_ticks > last_fire + PHASE && kilo_ticks <= last_fire + PHASE + 1) {
+				//set_color(RGB(0, 0, 0));
+				fire_next = 0;
+			}
+		}
+		// If no neighbor with a gradient of 1 or more less than this robot's
+		// gradient is detected within 2 seconds, increment the latter by 1.
+		if ((kilo_ticks > (last_gradient_anchored + 64)) && (own_gradient < GRADIENT_MAX))
+		{
+			own_gradient = own_gradient + 1;
+		}
+		
 	}
 	else
 	{
