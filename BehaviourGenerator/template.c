@@ -24,21 +24,25 @@ uint32_t last_state_update;
 void set_colour(int new_colour) {
 
 	//only update if colour changes
-	if(current_colour != new_colour)
-	if (current_colour == BLACK) {
-		set_color(RGB(0, 0, 0));
-	}
-	else if (current_colour == RED) {
-		set_color(RGB(1, 0, 0));
-	}
-	else if (current_colour == GREEN) {
-		set_color(RGB(0, 1, 0));
-	}
-	else if (current_colour == BLUE) {
-		set_color(RGB(0, 0, 1));
-	}
-	else if (current_colour == WHITE) {
-		set_color(RGB(1, 1, 1));
+	if(current_colour != new_colour){
+
+		current_colour =new_colour;
+
+		if (current_colour == BLACK) {
+			set_color(RGB(0, 0, 0));
+		}
+		else if (current_colour == RED) {
+			set_color(RGB(1, 0, 0));
+		}
+		else if (current_colour == GREEN) {
+			set_color(RGB(0, 1, 0));
+		}
+		else if (current_colour == BLUE) {
+			set_color(RGB(0, 0, 1));
+		}
+		else if (current_colour == WHITE) {
+			set_color(RGB(1, 1, 1));
+		}
 	}
 }
 
