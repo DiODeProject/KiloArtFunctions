@@ -17,6 +17,8 @@ int current_colour = BLACK;
 int both_spined = 0;
 int current_action = 0;
 
+//INSERT GLOBAL VARIABLES HERE
+
 // We need an unsigned 32-bit integer to store clock ticks;
 // a regular int would overflow.
 uint32_t last_state_update;
