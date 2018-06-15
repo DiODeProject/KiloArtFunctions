@@ -16,8 +16,35 @@ int current_motion = STOP;
 int current_colour = BLACK;
 int both_spined = 0;
 int current_action = 0;
+int send_message = 0;
+int new_message = 0;
+
+int top_secret = 99;
 
 //INSERT GLOBAL VARIABLES HERE
+
+message_t message;
+
+message_t *message_tx()
+{
+	if (send_message == 1) {
+		return &message;
+	}
+	return 0;
+}
+
+void message_tx_success() {
+	send_message = 0;
+}
+
+void message_rx(message_t *m, distance_measurement_t *d)
+{
+	// Only process this message if the previous one has been processed.
+	if (new_message == 0)
+	{
+		new_message = 1;
+	}
+}
 
 // We need an unsigned 32-bit integer to store clock ticks;
 // a regular int would overflow.
@@ -87,6 +114,9 @@ void set_motion(int new_motion)
 void setup()
 {
 	last_state_update = kilo_ticks;
+	message.type = NORMAL;
+	message.data[0] = top_secret;
+	message.crc = message_crc(&message);
 }
 
 void loop()
@@ -97,6 +127,9 @@ void loop()
 int main()
 {
 	kilo_init();
+	kilo_message_rx = message_rx;
+	kilo_message_tx = message_tx;
+	kilo_message_tx_success = message_tx_success;
 	kilo_start(setup, loop);
 	return 0;
 }

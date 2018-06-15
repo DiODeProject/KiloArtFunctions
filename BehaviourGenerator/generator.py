@@ -80,11 +80,15 @@ class BehaviourGenerator:
 				condition_action = 'current_action' if nested_action==0 else \
 					'inner_action'+str(nested_action)
 
+				#encode 4th parameter MSG or NO_MSG
+				send_message = '1' if parameters[3]=='MSG' else '0'
+
 				#generate the result (concatenate for each line)
 				result = result + condition + str(condition_no) +  \
 					' ) {\n' + \
 					'  set_motion('+parameters[2]+');\n' + \
 					'  set_colour('+parameters[1]+');\n' + \
+					'  send_message = ' + send_message + ';\n' + \
 					'  if(kilo_ticks > last_state_update + ' + parameters[0] + ') {\n' + \
 					'    '+condition_action+' += 1;\n' + \
 					'    last_state_update = kilo_ticks;\n' + \
