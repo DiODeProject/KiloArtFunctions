@@ -115,11 +115,9 @@ class BehaviourGenerator:
 					#generate the result (concatenate for each line)
 					result = result + condition + str(condition_no) + \
 						' ) {\n\n' + \
+						'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
 						'  int i'+str(nested_action+1)+' = 0;\n' + \
 						'  while(i'+str(nested_action+1)+'<'+parameters[1]+'){\n'
-
-					#initialise global variables
-					global_variable = global_variable + 'int inner_action'+str(nested_action+1)+' = 0;\n'
 
 					#increment nested count
 					nested_action += 1
