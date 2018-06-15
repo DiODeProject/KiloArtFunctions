@@ -59,7 +59,7 @@ class BehaviourGenerator:
 		action_no = 0			#count for actions so that each action only execute once
 		nested_action = 0		#count for nested loop, different level shares different action count
 		nested_action_no = {}	#dictionary to store different levels of action count in nested loop
-		message_loop = False
+		condition_loop = False
 
 
 		#read file content line by line, store lines as list
@@ -120,17 +120,25 @@ class BehaviourGenerator:
 
 					try:
 						int(parameters[1])
-						message_loop = False
+
 						#generate the result (concatenate for each line)
-						result = result + condition + str(condition_no) + \
-							' ) {\n\n' + \
-							'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
-							'  int i'+str(nested_action+1)+' = 0;\n' + \
-							'  while(i'+str(nested_action+1)+'<'+parameters[1]+'){\n'
+						if parameters[1]=='0':
+							condition_loop = True
+							result = result + condition + str(condition_no) + \
+								' ) {\n\n' + \
+								'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
+								'  while(1){\n'
+						else:
+							condition_loop = False
+							result = result + condition + str(condition_no) + \
+								' ) {\n\n' + \
+								'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
+								'  int i'+str(nested_action+1)+' = 0;\n' + \
+								'  while(i'+str(nested_action+1)+'<'+parameters[1]+'){\n'
 
 					except ValueError:
 
-						message_loop = True
+						condition_loop = True
 						trigger = '-1'
 						if parameters[1] == 'MSG':
 							trigger = '0'
@@ -155,7 +163,7 @@ class BehaviourGenerator:
 					condition_action = 'current_action' if nested_action-1==0 else \
 						'inner_action'+str(nested_action-1)
 
-					if not message_loop:
+					if not condition_loop:
 						#generate the result (concatenate for each line)
 						result = result + condition + str(condition_no) + \
 							') {\n' + \
