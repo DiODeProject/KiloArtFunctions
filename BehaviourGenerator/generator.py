@@ -59,6 +59,8 @@ class BehaviourGenerator:
 		action_no = 0			#count for actions so that each action only execute once
 		nested_action = 0		#count for nested loop, different level shares different action count
 		nested_action_no = {}	#dictionary to store different levels of action count in nested loop
+		message_loop = False
+
 
 		#read file content line by line, store lines as list
 		content = self.rfile.readlines()
@@ -116,12 +118,30 @@ class BehaviourGenerator:
 					condition_no = action_no if nested_action ==0 else \
 						nested_action_no[nested_action]
 
-					#generate the result (concatenate for each line)
-					result = result + condition + str(condition_no) + \
-						' ) {\n\n' + \
-						'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
-						'  int i'+str(nested_action+1)+' = 0;\n' + \
-						'  while(i'+str(nested_action+1)+'<'+parameters[1]+'){\n'
+					try:
+						int(parameters[1])
+						message_loop = False
+						#generate the result (concatenate for each line)
+						result = result + condition + str(condition_no) + \
+							' ) {\n\n' + \
+							'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
+							'  int i'+str(nested_action+1)+' = 0;\n' + \
+							'  while(i'+str(nested_action+1)+'<'+parameters[1]+'){\n'
+
+					except ValueError:
+
+						message_loop = True
+						trigger = '-1'
+						if parameters[1] == 'MSG':
+							trigger = '0'
+						elif parameters[1] == 'NO_MSG':
+							trigger = '1'
+						#generate the result (concatenate for each line)
+						result = result + condition + str(condition_no) + \
+							' ) {\n\n' + \
+							'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
+							'  while(send_message=='+trigger+'){\n'
+
 
 					#increment nested count
 					nested_action += 1
@@ -135,15 +155,26 @@ class BehaviourGenerator:
 					condition_action = 'current_action' if nested_action-1==0 else \
 						'inner_action'+str(nested_action-1)
 
-					#generate the result (concatenate for each line)
-					result = result + condition + str(condition_no) + \
-						') {\n' + \
-						'      i'+str(nested_action)+'++;\n' + \
-						'      inner_action' + str(nested_action) + ' = 0;\n' + \
-						'    }\n' + \
-						'  }\n\n' + \
-						'  '+condition_action+' += 1;\n' + \
-						'}\n'
+					if not message_loop:
+						#generate the result (concatenate for each line)
+						result = result + condition + str(condition_no) + \
+							') {\n' + \
+							'      i'+str(nested_action)+'++;\n' + \
+							'      inner_action' + str(nested_action) + ' = 0;\n' + \
+							'    }\n' + \
+							'  }\n\n' + \
+							'  '+condition_action+' += 1;\n' + \
+							'}\n'
+					else:
+						#generate the result (concatenate for each line)
+						result = result + condition + str(condition_no) + \
+							') {\n' + \
+							'      inner_action' + str(nested_action) + ' = 0;\n' + \
+							'    }\n' + \
+							'  }\n\n' + \
+							'  '+condition_action+' += 1;\n' + \
+							'}\n'
+
 
 					#decreae the nested count as leaving the loop
 					nested_action -= 1

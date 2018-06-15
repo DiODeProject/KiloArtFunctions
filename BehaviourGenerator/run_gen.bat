@@ -1,0 +1,1 @@
+python generator.py -t template.c -r "choreography 1HALF.txt" -w test01.c
