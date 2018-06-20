@@ -11,6 +11,9 @@
 #define GREEN 2
 #define BLUE 3
 #define WHITE 4
+#define YELLOW 5
+#define MAGENTA 6
+#define CYAN 7
 
 int current_motion = STOP;
 int current_colour = BLACK;
@@ -71,6 +74,15 @@ void set_colour(int new_colour) {
 		}
 		else if (current_colour == WHITE) {
 			set_color(RGB(1, 1, 1));
+		}
+		else if (current_colour == YELLOW) {
+			set_color(RGB(1, 1, 0));
+		}
+		else if (current_colour == MAGENTA) {
+			set_color(RGB(1, 0, 1));
+		}
+		else if (current_colour == CYAN) {
+			set_color(RGB(0, 1, 1));
 		}
 	}
 }
