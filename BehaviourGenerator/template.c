@@ -122,6 +122,8 @@ void setup()
 void loop()
 {
 	//INSERT CODE HERE
+
+	new_message = 0;
 }
 
 int main()

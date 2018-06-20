@@ -60,6 +60,7 @@ class BehaviourGenerator:
 		nested_action = 0		#count for nested loop, different level shares different action count
 		nested_action_no = {}	#dictionary to store different levels of action count in nested loop
 		condition_loop = False
+		iteration_loop = []
 
 
 		#read file content line by line, store lines as list
@@ -126,15 +127,13 @@ class BehaviourGenerator:
 							condition_loop = True
 							result = result + condition + str(condition_no) + \
 								' ) {\n\n' + \
-								'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
-								'  while(1){\n'
+								'  if(1){\n'
 						else:
 							condition_loop = False
 							result = result + condition + str(condition_no) + \
 								' ) {\n\n' + \
-								'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
-								'  int i'+str(nested_action+1)+' = 0;\n' + \
-								'  while(i'+str(nested_action+1)+'<'+parameters[1]+'){\n'
+								'  if(i'+str(nested_action+1)+'<'+parameters[1]+'){\n'
+							iteration_loop.append(nested_action)
 
 					except ValueError:
 
@@ -147,8 +146,7 @@ class BehaviourGenerator:
 						#generate the result (concatenate for each line)
 						result = result + condition + str(condition_no) + \
 							' ) {\n\n' + \
-							'  int inner_action'+str(nested_action+1)+' = 0;\n' + \
-							'  while(send_message=='+trigger+'){\n'
+							'  if(new_message=='+trigger+'){\n'
 
 
 					#increment nested count
@@ -171,7 +169,10 @@ class BehaviourGenerator:
 							'      inner_action' + str(nested_action) + ' = 0;\n' + \
 							'    }\n' + \
 							'  }\n\n' + \
+							'  else{\n' + \
 							'  '+condition_action+' += 1;\n' + \
+							'  i'+str(nested_action)+' = 0;\n' + \
+							'  }\n' + \
 							'}\n'
 					else:
 						#generate the result (concatenate for each line)
@@ -180,7 +181,9 @@ class BehaviourGenerator:
 							'      inner_action' + str(nested_action) + ' = 0;\n' + \
 							'    }\n' + \
 							'  }\n\n' + \
+							'  else{\n' + \
 							'  '+condition_action+' += 1;\n' + \
+							'  }\n' + \
 							'}\n'
 
 
@@ -192,6 +195,15 @@ class BehaviourGenerator:
 						action_no += 1
 					else:
 						nested_action_no[nested_action] += 1
+
+		for k in nested_action_no:
+			global_variable = global_variable + 'int inner_action'+str(k)+' = 0;\n'
+
+		iteration_loop = set(iteration_loop)
+		print(iteration_loop)
+
+		for i in iteration_loop:
+			global_variable = global_variable + 'int i'+str(i+1)+' = 0;\n'
 
 		#put the content code into template code
 		result = self.temp_file.read().replace('//INSERT CODE HERE',result,1)
