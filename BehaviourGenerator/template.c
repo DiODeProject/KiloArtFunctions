@@ -111,6 +111,16 @@ void set_motion(int new_motion)
 	}
 }
 
+void set_speed(float left, float right)
+{
+    if(both_spined == 0)
+        spinup_motors();
+    set_motors((uint8_t)(((float)kilo_straight_left)*left), (uint8_t)(((float)kilo_straight_right)*right));
+    both_spined = 1;
+
+}
+
+
 void setup()
 {
 	last_state_update = kilo_ticks;

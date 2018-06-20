@@ -83,13 +83,16 @@ class BehaviourGenerator:
 				condition_action = 'current_action' if nested_action==0 else \
 					'inner_action'+str(nested_action)
 
+				customer_action = 'set_speed'+parameters[2] if re.match('\(\d*\.\d+\,\d*\.\d+\)',parameters[2]) else \
+					'set_motion('+parameters[2]+')'
+
 				#encode 4th parameter MSG or NO_MSG
 				send_message = '1' if parameters[3]=='MSG' else '0'
 
 				#generate the result (concatenate for each line)
 				result = result + condition + str(condition_no) +  \
 					' ) {\n' + \
-					'  set_motion('+parameters[2]+');\n' + \
+					'  '+customer_action + ';\n' + \
 					'  set_colour('+parameters[1]+');\n' + \
 					'  send_message = ' + send_message + ';\n' + \
 					'  if(kilo_ticks > last_state_update + ' + parameters[0] + ') {\n' + \
