@@ -22,7 +22,8 @@ int current_action = 0;
 int send_message = 0;
 int new_message = 0;
 
-int top_secret = 99;
+uint8_t top_secret = 99;
+uint32_t last_received;
 
 //INSERT GLOBAL VARIABLES HERE
 
@@ -46,6 +47,7 @@ void message_rx(message_t *m, distance_measurement_t *d)
 	if (new_message == 0)
 	{
 		new_message = 1;
+		last_received = kilo_ticks;
 	}
 }
 
@@ -145,7 +147,8 @@ void loop()
 {
 	//INSERT CODE HERE
 
-	new_message = 0;
+	if (kilo_ticks > last_received + 5)
+		new_message = 0;
 }
 
 int main()
