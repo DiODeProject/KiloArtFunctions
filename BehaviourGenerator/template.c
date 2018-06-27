@@ -1,11 +1,14 @@
 #include "kilolib.h"
 
 // Declare constants.
+
+//kilobots' motion state
 #define STOP 0
 #define LEFT 1
 #define RIGHT 2
 #define STRAIGHT 3
 
+//kilobots' LED colour state
 #define BLACK 0
 #define RED 1
 #define GREEN 2
@@ -17,18 +20,22 @@
 
 int current_motion = STOP;
 int current_colour = BLACK;
-int both_spined = 0;
-int current_action = 0;
-int send_message = 0;
-int new_message = 0;
+int both_spined = 0;		//check if the motorss have spined or not
+int current_action = 0;		//iterating the action number
+int send_message = 0;		//whether it is time to send message
+int new_message = 0;		//whether received a new message
 
-uint8_t top_secret = 99;
-uint32_t last_received;
+// We need an unsigned 32-bit integer to store clock ticks;
+// a regular int would overflow.
+uint8_t top_secret = 99;	//the random message data to be transmitted
+uint32_t last_received;		//the time when last received a message
+uint32_t last_state_update;	
 
 //INSERT GLOBAL VARIABLES HERE
 
-message_t message;
+message_t message;			//message object
 
+//message transmitting function
 message_t *message_tx()
 {
 	if (send_message == 1) {
@@ -37,10 +44,12 @@ message_t *message_tx()
 	return 0;
 }
 
+//actions when message successfully transmitted
 void message_tx_success() {
 	send_message = 0;
 }
 
+//message receiving function
 void message_rx(message_t *m, distance_measurement_t *d)
 {
 	// Only process this message if the previous one has been processed.
@@ -51,10 +60,6 @@ void message_rx(message_t *m, distance_measurement_t *d)
 	}
 }
 
-// We need an unsigned 32-bit integer to store clock ticks;
-// a regular int would overflow.
-uint32_t last_state_update;
-
 void set_colour(int new_colour) {
 
 	//only update if colour changes
@@ -62,6 +67,7 @@ void set_colour(int new_colour) {
 
 		current_colour =new_colour;
 
+		//changing the colour by RGB value, 2^3=8 possible states
 		if (current_colour == BLACK) {
 			set_color(RGB(0, 0, 0));
 		}
@@ -96,6 +102,7 @@ void set_motion(int new_motion)
 	{
 		current_motion = new_motion;
 
+		//can define customer actions here, e.g. vibrating 7 times
 		if (current_motion == STOP)
 		{
 			set_motors(0, 0);
@@ -125,6 +132,8 @@ void set_motion(int new_motion)
 	}
 }
 
+//set customer speed, takes 2 floats,
+//the left-motor and right-motor speed scale from calibrated straight value
 void set_speed(float left, float right)
 {
     if(both_spined == 0)
@@ -134,7 +143,7 @@ void set_speed(float left, float right)
 
 }
 
-
+//initialising parameters
 void setup()
 {
 	last_state_update = kilo_ticks;
@@ -143,10 +152,12 @@ void setup()
 	message.crc = message_crc(&message);
 }
 
+//main loop
 void loop()
 {
 	//INSERT CODE HERE
 
+	//reset the receiver after 5 ticks
 	if (kilo_ticks > last_received + 5)
 		new_message = 0;
 }
