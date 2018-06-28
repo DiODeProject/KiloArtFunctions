@@ -7,7 +7,7 @@ This program requires python3 environment. You can download python environment h
 
 The format of the script is that:
 
-######one line script:
+### one line script:
 > amount of time in ticks, tab, LED colour, tab, Kilobot Motion, tab, whether to send message
 
 Example:
@@ -20,7 +20,7 @@ after 150 ticks (around 5 second), it executes next action, which is turning off
 It will keep doing the last action forever as there is nothing telling it to change.
 However, if the last action inclues sending messages, it will terminate sending message after the amount of time specified.
 
-######special scipt using loops:
+### special scipt using loops:
 
 start with:
 > REPEAT,tab,number of times repeating or some special condictions
@@ -57,7 +57,7 @@ please make sure that the loop is closed with `REPEAT END`, otherwise there will
 
 You can save the script as a txt file.
 
-######Command to generate c file
+### Command to generate c file
 ```
 python3 -t template.c -r [the name of the script file you wrote] -w [the file name of the output code]
 ```
