@@ -66,3 +66,8 @@ this will generate the c file. After that you can follow the instruction of mani
 You can find the instruction of kilobots here:
 > https://www.kilobotics.com/documentation
 
+## Author
+**Junjin Chen**
+
+## Acknowledgements
+**Andreagiovanni Reina**
